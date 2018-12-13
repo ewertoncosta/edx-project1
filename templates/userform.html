@@ -1,19 +1,24 @@
 {% extends "layout.html" %}
 {% block title %}
-New User Registration
+User Registration
 {% endblock %}
 {% block body %}
     <div class="form-group">
-        <form action="" method="POST">
-            <div class="form-group">
-                <input type="email" placeholder="Email Adress" name="username">
-            </div>
-            <div class="form-group">
-                <input type="password" placeholder="Password" name="password">
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary" value="Register">Register</button>
-            </div>
-        </form>
+        <div class="float-left">
+            <form action="{{ url_for('register')}}" method="POST">
+                <div class="form-group">
+                    <h2>User Registration</h2>
+                </div>
+                <div class="form-group">
+                    <span class="plain">Email:</span><input type="email" class="form-control" placeholder="Email Adress" name="username">
+                </div>
+                <div class="form-group">
+                        <span class="plain">Password:</span><input type="password" class="form-control" placeholder="Password" name="password">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" value="saveuser">Register</button>
+                </div>
+            </form>
+        </div>
     </div>    
 {% endblock %}
