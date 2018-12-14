@@ -29,7 +29,6 @@ def index():
 def userform():
     return render_template("userform.html")
 
-
 @app.route("/register", methods=["POST"])
 def register():
     """Register User."""

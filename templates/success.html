@@ -7,4 +7,9 @@ Success
 {% block body %}
 <h2>Success!</h2>
 You have successfully registered!
+<div class="form-group">
+    <form action="{{ url_for('index') }}">
+        <input type="submit" class="btn btn-primary" value="Back to Login">
+    </form>
+</div>
 {% endblock body %}
