@@ -29,6 +29,10 @@ def index():
 def userform():
     return render_template("userform.html")
 
+@app.route("/login", methods=["POST"])
+def login():
+    return render_template("booksearch.html")
+
 @app.route("/register", methods=["POST"])
 def register():
     """Register User."""
