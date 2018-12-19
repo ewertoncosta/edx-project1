@@ -3,3 +3,4 @@ Flask-Session
 psycopg2
 SQLAlchemy
 ItsDangerous==0.24
+Flask-Login

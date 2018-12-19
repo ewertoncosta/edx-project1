@@ -1,11 +1,15 @@
 import os
 
-from flask import Flask, render_template, session, request
+from flask import Flask, redirect, render_template, session, request, flash
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask_login import LoginManager
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+login = LoginManager(app)
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -21,19 +25,26 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
-@app.route("/")
+@app.route("/",  methods=["GET"])
 def index():
-    return render_template("login.html")
+    if not session.get('logged_in'):
+        return  render_template("login.html")
+    else:
+        return render_template("booksearch.html")
 
-@app.route("/userform", methods=["POST"])
+@app.route("/userform", methods=['GET','POST'])
 def userform():
     return render_template("userform.html")
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=['GET','POST'])
 def login():
-    return render_template("booksearch.html")
+    post_user = request.form.get("username")
+    post_password = request.form.get("password")
 
-@app.route("/register", methods=["POST"])
+    if db.execute("SELECT * FROM users WHERE username = :username and password = :password",{"username": post_user, "password": post_password}).rowcount == 1:
+        return index()
+
+@app.route("/register", methods=["GET"])
 def register():
     """Register User."""
 
