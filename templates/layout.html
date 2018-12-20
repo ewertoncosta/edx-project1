@@ -11,8 +11,16 @@
         margin: 10px auto 30px;
         max-width: 38%;
         padding: 50px 70px 70px 71px;
-      }
+    }
+    input, label {
+    display:block;
+    }
     </style>
+{% with logged=session['logged_in'] %}
+    {% if logged %}
+        <div align=right><a href="/logout">Logout</a></div>
+    {% endif %}
+{% endwith %}
 </head>
 <body>
 {% with messages=get_flashed_messages() %}

@@ -30,7 +30,21 @@ def index():
     if not session.get('logged_in'):
         return  render_template("login.html")
     else:
-        return render_template("booksearch.html")
+        return redirect("/booksearch")
+
+@app.route("/booksearch", methods=["GET"])
+def booksearch():
+    return render_template("booksearch.html")
+
+@app.route("/books", methods=["GET"])
+def books():
+    books = db.execute("SELECT * FROM books").fetchall()
+    return render_template("books.html", books=books)
+
+@app.route("/book/<int:isbn>", methods=["GET"])
+def book(isbn):
+    books = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchone()
+    return render_template("book.html", books=books, isbn=isbn)    
 
 @app.route("/userform", methods=['GET','POST'])
 def userform():
@@ -41,10 +55,22 @@ def login():
     post_user = request.form.get("username")
     post_password = request.form.get("password")
 
-    if db.execute("SELECT * FROM users WHERE username = :username and password = :password",{"username": post_user, "password": post_password}).rowcount == 1:
-        return index()
+    if post_user != '' and post_password != '':
+        if db.execute("SELECT * FROM users WHERE username = :username and password = :password",{"username": post_user, "password": post_password}).rowcount == 1:
+            session['logged_in'] = True
+            return index()
+        else:
+            session['logged_in'] = False
+            return render_template("error.html", message="Incorrect User or Password.")
+    else:
+        return render_template("error.html",message="Email and Password are required.")
 
-@app.route("/register", methods=["GET"])
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return index()
+
+@app.route("/register", methods=["POST"])
 def register():
     """Register User."""
 
@@ -52,9 +78,12 @@ def register():
     password = request.form.get("password")
 
     if db.execute("SELECT * FROM users WHERE username = :username",{"username": user}).rowcount == 0:
-        db.execute("INSERT INTO users(username, password) VALUES (:username, :password)"
+        if user != '' and password != '':
+            db.execute("INSERT INTO users(username, password) VALUES (:username, :password)"
                  ,{"username": user, "password": password})
-        db.commit()
+            db.commit()
+        else:
+            return render_template("error.html", message="Email and Password are required.")
     else:
         return render_template("error.html",message="User already registered.")
     return render_template("success.html")

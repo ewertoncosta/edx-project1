@@ -1,9 +1,34 @@
 {% extends "layout.html" %}
-
 {% block title %}
-Search for a book
-{% endblock title %}
-
+Search for a Book
+{% endblock %}
 {% block body %}
-Logged in
-{% endblock body %}
+    <div class="form-group">
+        <div class="float-left">
+            <form action="{{ url_for('books')}}" method="post">
+                <div class="form-group">
+                    <h2>Search for a Book</h2>
+                </div>
+                <div class="form-group">
+                    <label for="isbn">ISBN:</label>
+                    <input type="text" name="isbn" id="isbn">
+                </div>
+                <div class="form-group">
+                    <span class="plain">Book Title:</span>
+                    <input type="text" name="booktitle" id="booktitle">
+                </div>
+                <div class="form-group">
+                    <span class="plain">Author:</span>
+                    <input type="text" name="author" id="author">
+                </div>
+                <div class="form-group">
+                    <span class="plain">Year:</span>
+                    <input type="text" name="year" id="year">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" value="searchbook">Search Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
