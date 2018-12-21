@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, render_template, session, request, flash
+from flask import Flask, redirect, render_template, session, request, flash, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,7 +24,6 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-
 @app.route("/",  methods=["GET"])
 def index():
     if not session.get('logged_in'):
@@ -32,16 +31,24 @@ def index():
     else:
         return redirect("/booksearch")
 
-@app.route("/booksearch", methods=["GET"])
+@app.route("/booksearch", methods=["GET","POST"])
 def booksearch():
-    return render_template("booksearch.html")
+    isbn = request.form.get("isbn")
+    booktitle = request.form.get("booktitle")
+    author = request.form.get("author")
+    year = request.form.get("year")
+    
+    if request.method == 'POST':
+        return redirect(url_for('books',isbn=isbn))
+    else:
+        return render_template("booksearch.html",isbn=isbn)
 
-@app.route("/books", methods=["GET"])
-def books():
+@app.route("/books/<isbn>", methods=["GET"])
+def books(isbn):
     books = db.execute("SELECT * FROM books").fetchall()
-    return render_template("books.html", books=books)
+    return render_template("books.html",isbn=isbn)
 
-@app.route("/book/<int:isbn>", methods=["GET"])
+@app.route("/book/<isbn>", methods=["GET"])
 def book(isbn):
     books = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchone()
     return render_template("book.html", books=books, isbn=isbn)    
@@ -68,7 +75,7 @@ def login():
 @app.route("/logout")
 def logout():
     session['logged_in'] = False
-    return index()
+    return redirect("/")
 
 @app.route("/register", methods=["POST"])
 def register():
