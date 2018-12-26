@@ -4,12 +4,9 @@ from flask import Flask, redirect, render_template, session, request, flash, url
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from flask_login import LoginManager
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-login = LoginManager(app)
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -33,6 +30,7 @@ def index():
 
 @app.route("/booksearch", methods=["GET","POST"])
 def booksearch():
+<<<<<<< HEAD
     isbn = request.form.get("isbn")
     booktitle = request.form.get("booktitle")
     author = request.form.get("author")
@@ -47,6 +45,20 @@ def booksearch():
 def books(isbn):
     books = db.execute("SELECT * FROM books").fetchall()
     return render_template("books.html",isbn=isbn)
+=======
+    post_isbn = request.form.get("isbn")
+    post_title = request.form.get("booktitle")
+    post_author = request.form.get("author")
+    if request.method == "POST":
+        books = db.execute("SELECT * FROM books WHERE isbn like :isbn and lower(title) like lower(:title) and lower(author) like lower(:author)",{"isbn": '%'+post_isbn+'%',"title": '%'+post_title+'%', "author": '%'+post_author+'%'}).fetchall()
+        return render_template("books.html",books=books)
+    else:
+        return render_template("booksearch.html")
+
+@app.route("/books", methods=["POST"])
+def books():
+    return render_template("books.html", books=books)
+>>>>>>> 9436ca1fcaf9b0bb964546318afb45aa4cb184cf
 
 @app.route("/book/<isbn>", methods=["GET"])
 def book(isbn):
