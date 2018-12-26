@@ -30,22 +30,6 @@ def index():
 
 @app.route("/booksearch", methods=["GET","POST"])
 def booksearch():
-<<<<<<< HEAD
-    isbn = request.form.get("isbn")
-    booktitle = request.form.get("booktitle")
-    author = request.form.get("author")
-    year = request.form.get("year")
-    
-    if request.method == 'POST':
-        return redirect(url_for('books',isbn=isbn))
-    else:
-        return render_template("booksearch.html",isbn=isbn)
-
-@app.route("/books/<isbn>", methods=["GET"])
-def books(isbn):
-    books = db.execute("SELECT * FROM books").fetchall()
-    return render_template("books.html",isbn=isbn)
-=======
     post_isbn = request.form.get("isbn")
     post_title = request.form.get("booktitle")
     post_author = request.form.get("author")
@@ -58,9 +42,8 @@ def books(isbn):
 @app.route("/books", methods=["POST"])
 def books():
     return render_template("books.html", books=books)
->>>>>>> 9436ca1fcaf9b0bb964546318afb45aa4cb184cf
 
-@app.route("/book/<isbn>", methods=["GET"])
+@app.route("/book/<string:isbn>", methods=["GET"])
 def book(isbn):
     books = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchone()
     return render_template("book.html", books=books, isbn=isbn)    
