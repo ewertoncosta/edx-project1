@@ -41,12 +41,12 @@ def booksearch():
 
 @app.route("/books", methods=["POST"])
 def books():
-    return render_template("books.html", books=books)
+    return render_template("books.html")
 
 @app.route("/book/<string:isbn>", methods=["GET"])
 def book(isbn):
-    books = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchone()
-    return render_template("book.html", books=books, isbn=isbn)    
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchall()
+    return render_template("book.html", book=book)    
 
 @app.route("/userform", methods=['GET','POST'])
 def userform():
@@ -89,4 +89,3 @@ def register():
     else:
         return render_template("error.html",message="User already registered.")
     return render_template("success.html")
-
