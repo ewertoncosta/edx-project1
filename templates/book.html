@@ -3,9 +3,6 @@
 Book Reviews
 {% endblock title %}
 {% block body %}
-<form action="" method="post">
-    <button type="submit" class="btn btn-primary"value="backtobooks" formaction="{{ url_for('books', book=book) }}">Back</button>
-</form>
 <h2>Book Reviews</h2>
 <div class="container">
 {% for book in book %}
@@ -14,4 +11,6 @@ Book Reviews
     <p class="ratings">{{'{:,.0f}'.format(reviews_count)}} Ratings {{average_rating}} Average Rating</p>
 {% endfor %}
 </div>
+{{isbn}}
+{{isbn_type}}
 {% endblock body %}
