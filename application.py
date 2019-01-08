@@ -4,6 +4,8 @@ from flask import Flask, redirect, render_template, session, request, flash, url
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+import requests
+import json
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -46,7 +48,13 @@ def books():
 @app.route("/book/<string:isbn>", methods=["GET"])
 def book(isbn):
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchall()
-    return render_template("book.html", book=book)    
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "rQPXZ9RxUsOU0BkirgCzg", "isbns": "0618640150"})
+    json_data = res.json()
+    reviews_count = json_data['books'][0]['work_ratings_count']
+    average_rating = json_data['books'][0]['average_rating']
+    ##for data in json_data:
+    ##    reviews_count = json_data[data][0]['work_ratings_count']
+    return render_template("book.html", book=book, res=json_data,  reviews_count=reviews_count, average_rating=average_rating)
 
 @app.route("/userform", methods=['GET','POST'])
 def userform():
