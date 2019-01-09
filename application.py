@@ -48,13 +48,13 @@ def books():
 @app.route("/book/<string:isbn>", methods=["GET"])
 def book(isbn):
     isbn_str = str(isbn)
-    isbn_type = type(isbn_str)
-    book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchall()
-    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "rQPXZ9RxUsOU0BkirgCzg", "isbns": isbn_str})
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn_str}).fetchall()
+    payload = {'key': 'rQPXZ9RxUsOU0BkirgCzg', 'isbns': isbn}
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params=payload)
     json_data = res.json()
     reviews_count = json_data['books'][0]['work_ratings_count']
     average_rating = json_data['books'][0]['average_rating']
-    return render_template("book.html", book=book, res=json_data,  reviews_count=reviews_count, average_rating=average_rating, isbn=isbn, isbn_type=isbn_type)
+    return render_template("book.html", book=book, res=json_data,  reviews_count=reviews_count, average_rating=average_rating)
 
 @app.route("/userform", methods=['GET','POST'])
 def userform():

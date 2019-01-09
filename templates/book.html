@@ -3,6 +3,7 @@
 Book Reviews
 {% endblock title %}
 {% block body %}
+<button class="btn btn-primary" onclick="window.history.back()">Back</button>
 <h2>Book Reviews</h2>
 <div class="container">
 {% for book in book %}
@@ -10,7 +11,7 @@ Book Reviews
     <p class="book-author">by {{book.author}}</p>
     <p class="ratings">{{'{:,.0f}'.format(reviews_count)}} Ratings {{average_rating}} Average Rating</p>
 {% endfor %}
+<button class="btn btn-primary">Write a Review</button>
+<h2>Reviews</h2>
 </div>
-{{isbn}}
-{{isbn_type}}
 {% endblock body %}
