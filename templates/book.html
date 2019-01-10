@@ -11,7 +11,16 @@ Book Reviews
     <p class="book-author">by {{book.author}}</p>
     <p class="ratings">{{'{:,.0f}'.format(reviews_count)}} Ratings {{average_rating}} Average Rating</p>
 {% endfor %}
-<button class="btn btn-primary">Write a Review</button>
+<form action="" method="post">
+    <div class="form-group">
+        <button class="btn btn-primary">Submit Review</button>
+        <label for="rating-system">Rating:</label>
+        <input id="rating-system" type="number" class="rating" min="1" max="5" step="1">
+        <label for="textreview">Review:</label>
+        <textarea name="textreview" id="textreview" cols="50" rows="6"></textarea>
+    </div>
+</form>
+<input id="rating-system" type="number" class="rating" min="1" max="5" step="1">
 <h2>Reviews</h2>
 </div>
 {% endblock body %}
