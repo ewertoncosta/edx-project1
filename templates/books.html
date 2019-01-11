@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
-
 {% block title %}
 Books List
 {% endblock title %}
-
 {% block body %}
 <form action="" method=""get">
-    <button type="submit" class="btn btn-primary"value="backtosearch" formaction="{{ url_for('booksearch') }}">New Search</button>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" value="backtosearch" formaction="{{ url_for('booksearch') }}">New Search</button>
+    </div>    
 </form>
 <h2>Books List</h2>
 <table class="table">

@@ -25,10 +25,10 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/",  methods=["GET"])
 def index():
-    if not session.get('logged_in'):
-        return  render_template("login.html")
-    else:
+    if 'username' in session:
         return redirect("/booksearch")
+    else:
+        return  render_template("login.html")
 
 @app.route("/booksearch", methods=["GET","POST"])
 def booksearch():
@@ -45,16 +45,26 @@ def booksearch():
 def books():
     return render_template("books.html")
 
-@app.route("/book/<string:isbn>", methods=["GET"])
+@app.route("/book/<string:isbn>", methods=["GET","POST"])
 def book(isbn):
-    isbn_str = str(isbn)
-    book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn_str}).fetchall()
+    review = request.form.get("textreview")
+    rating = request.form.get("textrating")
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchall()
+    book_id = [column[0] for column in book]
+    reviews = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",{"book_id": book_id[0]}).fetchall()
     payload = {'key': 'rQPXZ9RxUsOU0BkirgCzg', 'isbns': isbn}
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params=payload)
     json_data = res.json()
     reviews_count = json_data['books'][0]['work_ratings_count']
     average_rating = json_data['books'][0]['average_rating']
-    return render_template("book.html", book=book, res=json_data,  reviews_count=reviews_count, average_rating=average_rating)
+    if request.method == "POST":
+        if review != '':
+            db.execute("INSERT INTO reviews(book_id,review,rating) VALUES (:book_id, :review, :rating)"
+                        ,{"book_id": book_id[0], "review": review, "rating": rating})
+            db.commit()
+            reviews = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",{"book_id": book_id[0]}).fetchall()
+            return redirect(url_for('book',isbn=isbn))
+    return render_template("book.html", book=book, res=json_data,  reviews_count=reviews_count, average_rating=average_rating, reviews=reviews)            
 
 @app.route("/userform", methods=['GET','POST'])
 def userform():
@@ -67,17 +77,17 @@ def login():
 
     if post_user != '' and post_password != '':
         if db.execute("SELECT * FROM users WHERE username = :username and password = :password",{"username": post_user, "password": post_password}).rowcount == 1:
-            session['logged_in'] = True
+            session['username'] = post_user
             return index()
         else:
-            session['logged_in'] = False
+            session.pop('username', None)
             return render_template("error.html", message="Incorrect User or Password.")
     else:
         return render_template("error.html",message="Email and Password are required.")
 
 @app.route("/logout")
 def logout():
-    session['logged_in'] = False
+    session.pop('username', None)
     return redirect("/")
 
 @app.route("/register", methods=["POST"])

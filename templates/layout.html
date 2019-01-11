@@ -3,41 +3,10 @@
 <head>
     <title>{% block title %}{% endblock title %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" />
-    <link href="{{url_for('static',filename='css/star-rating.css')}}" media="all" rel="stylesheet" type="text/css" />
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
-    <script href="{{url_for('static',filename='js/star-rating.js')}}" type="text/javascript"></script>
-    <style>
-    .main-div {
-        background: #ffffff none repeat scroll 0 0;
-        border-radius: 2px;
-        margin: 10px auto 30px;
-        max-width: 38%;
-        padding: 50px 70px 70px 71px;
-    }
-    input, label {
-        display:block;
-    }
-    button{
-        margin-bottom: 15px;
-    }
-    .book-title{
-        font-weight: bold;
-        font-size: 18px;
-        margin-bottom: 1px;
-    }
-    .book-author{
-        color: #777777;
-        margin-bottom: 1px;
-    }
-    .ratings{
-        color:#777777;
-    }
-    </style>
-{% with logged=session['logged_in'] %}
-    {% if logged %}
-        <div align=right><a href="/logout">Logout</a></div>
-    {% endif %}
-{% endwith %}
+    <link href="{{url_for('static',filename='css/styles.css')}}" media="all" rel="stylesheet" type="text/css" />
+{% if 'username' in session %}
+    <div align=right>{{session.username}} <a href="/logout">Logout</a></div>
+{% endif %}
 </head>
 <body>
 {% with messages=get_flashed_messages() %}

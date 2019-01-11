@@ -1,67 +1,18 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" />
-    <style>
-        body#LoginForm {
-            background-color: #d4d4d4;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover;
-            padding: 10px;
-        }
-        .form-heading {
-            color: #fff;
-            font-size: 23px;
-        }
-        .panel h2 {
-            color: #444444;
-            font-size: 18px;
-            margin: 0 0 8px 0;
-        }
-        .panel p {
-            color: #777777;
-            font-size: 14px;
-            margin-bottom: 30px;
-            line-height: 24px;
-        }
-        .login-form .form-control {
-            background: #f7f7f7 none repeat scroll 0 0;
-            border: 1px solid #d4d4d4;
-            border-radius: 4px;
-            font-size: 14px;
-            height: 50px;
-            line-height: 50px;
-        }
-        .main-div {
-            background: #ffffff none repeat scroll 0 0;
-            border-radius: 2px;
-            margin: 10px auto 30px;
-            max-width: 38%;
-            padding: 50px 70px 70px 71px;
-        }
-        .login-form .form-group {
-            margin-bottom: 10px;
-        }
-
-        .login-form {
-            text-align: center;
-        }
-    </style>
-</head>
-
+{% extends "layout.html" %}
+{% block title %}
+Login
+{% endblock title %}
+{% block body %}
 <body id="LoginForm">
     <div class="login-form">
         <div class="main-div">
             <div class="panel">
                 <h2>Login</h2>
-                <p>Please enter your email and password</p>
+                <p>Please enter your username and password</p>
             </div>
             <form action="" method="POST" id="login">
                 <div class="form-group">
-                    <input type="email" class="form-control" id="inputemail" placeholder="Email Adress" name="username">
+                    <input type="text" class="form-control" id="inputusername" placeholder="Username" name="username">
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" id="inputpassword" placeholder="Password" name="password">
@@ -72,5 +23,4 @@
         </div>
     </div>
 </body>
-
-</html>
+{% endblock body %}

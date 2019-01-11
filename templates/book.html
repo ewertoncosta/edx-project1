@@ -3,24 +3,41 @@
 Book Reviews
 {% endblock title %}
 {% block body %}
+<div class="form-group">
 <button class="btn btn-primary" onclick="window.history.back()">Back</button>
+</div>
 <h2>Book Reviews</h2>
-<div class="container">
 {% for book in book %}
     <p class="book-title">{{book.title}}</p>
     <p class="book-author">by {{book.author}}</p>
     <p class="ratings">{{'{:,.0f}'.format(reviews_count)}} Ratings {{average_rating}} Average Rating</p>
 {% endfor %}
-<form action="" method="post">
+<form action="" method="">
     <div class="form-group">
-        <button class="btn btn-primary">Submit Review</button>
-        <label for="rating-system">Rating:</label>
-        <input id="rating-system" type="number" class="rating" min="1" max="5" step="1">
-        <label for="textreview">Review:</label>
-        <textarea name="textreview" id="textreview" cols="50" rows="6"></textarea>
+        <input type="submit" class="btn btn-primary" value="Submit Review" formmethod="post">
     </div>
-</form>
-<input id="rating-system" type="number" class="rating" min="1" max="5" step="1">
-<h2>Reviews</h2>
-</div>
+    <div class="form-group">
+        <label for="rating-system">Rating:</label>
+        <input class="form-control" name="textrating" id="rating-system" type="number" class="form-control" min="1" max="5" step="1">
+    </div>
+    <div class="form-group">
+        <label for="textreview">Review:</label>
+        <textarea class="form-control" name="textreview" class="form-control" id="textreview" cols="50" rows="6"></textarea>
+    </div>
+    <h2>Reviews</h2>
+    <table class="table">
+    {% for review in reviews %}
+        <thead>
+            <tr>
+                <td>{{review.rating}}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{review.review}}</td>
+            </tr>
+        </tbody>    
+    {% endfor %}
+    </table>       
+</form> 
 {% endblock body %}
