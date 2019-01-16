@@ -6,7 +6,8 @@ Books List
 <form action="" method=""get">
     <div class="form-group">
         <button type="submit" class="btn btn-primary" value="backtosearch" formaction="{{ url_for('booksearch') }}">New Search</button>
-    </div>    
+    </div>
+    <input type="hidden" name="next" value="{{ request.path}}">
 </form>
 <h2>Books List</h2>
 <table class="table">

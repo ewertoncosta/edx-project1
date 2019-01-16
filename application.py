@@ -2,10 +2,11 @@ import os
 
 from flask import Flask, redirect, render_template, session, request, flash, url_for
 from flask_session import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
 import json
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -47,23 +48,38 @@ def books():
 
 @app.route("/book/<string:isbn>", methods=["GET","POST"])
 def book(isbn):
+    """Get user input"""
     review = request.form.get("textreview")
     rating = request.form.get("textrating")
+
+    """Return book data from the database"""
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchall()
     book_id = [column[0] for column in book]
+
+    """Return review data from the database"""
     reviews = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",{"book_id": book_id[0]}).fetchall()
     payload = {'key': 'rQPXZ9RxUsOU0BkirgCzg', 'isbns': isbn}
+
+    """Get Request on GoodReads API"""
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params=payload)
     json_data = res.json()
     reviews_count = json_data['books'][0]['work_ratings_count']
     average_rating = json_data['books'][0]['average_rating']
+
+    current_date = datetime.now()
+
     if request.method == "POST":
         if review != '':
-            db.execute("INSERT INTO reviews(book_id,review,rating) VALUES (:book_id, :review, :rating)"
-                        ,{"book_id": book_id[0], "review": review, "rating": rating})
-            db.commit()
-            reviews = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",{"book_id": book_id[0]}).fetchall()
-            return redirect(url_for('book',isbn=isbn))
+            try:
+                db.execute("INSERT INTO reviews(book_id,review,rating,username,date) VALUES (:book_id, :review, :rating, :username, :date)"
+                        ,{"book_id": book_id[0], "review": review, "rating": rating, "username": session.get("username"), "date": current_date})
+                db.commit()
+                reviews = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",{"book_id": book_id[0]}).fetchall()
+                return redirect(url_for('book',isbn=isbn))
+            except exc.IntegrityError as e:
+                db.rollback()
+                return render_template("error.html",message="Cannot submit more than 1 review per user.")
+            
     return render_template("book.html", book=book, res=json_data,  reviews_count=reviews_count, average_rating=average_rating, reviews=reviews)            
 
 @app.route("/userform", methods=['GET','POST'])
@@ -107,3 +123,10 @@ def register():
     else:
         return render_template("error.html",message="User already registered.")
     return render_template("success.html")
+
+@app.route("/api/<string:isbn>", methods=["GET"])
+def api(isbn):
+    response = db.execute("SELECT books.title,  books.author,  books.year,  round(avg(reviews.rating),1) average_rating,  count(*) review_count  FROM books join reviews ON books.id = reviews.book_id WHERE books.isbn =  :isbn group by books.isbn    ,  books.title    ,  books.author    ,  books.year",{"isbn": isbn}).fetchall()
+    
+    return response
+

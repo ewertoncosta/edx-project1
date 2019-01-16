@@ -14,9 +14,6 @@ Book Reviews
 {% endfor %}
 <form action="" method="">
     <div class="form-group">
-        <input type="submit" class="btn btn-primary" value="Submit Review" formmethod="post">
-    </div>
-    <div class="form-group">
         <label for="rating-system">Rating:</label>
         <input class="form-control" name="textrating" id="rating-system" type="number" class="form-control" min="1" max="5" step="1">
     </div>
@@ -24,12 +21,16 @@ Book Reviews
         <label for="textreview">Review:</label>
         <textarea class="form-control" name="textreview" class="form-control" id="textreview" cols="50" rows="6"></textarea>
     </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Submit Review" formmethod="post">
+    </div>    
     <h2>Reviews</h2>
     <table class="table">
     {% for review in reviews %}
         <thead>
             <tr>
-                <td>{{review.rating}}</td>
+                <td><b>{{review.username}}</b> gave it a <b>{{review.rating}}</td>
+                <td align="right"><b>{{review.date.strftime("%m/%d/%Y %H:%M:%S")}}</b></td>
             </tr>
         </thead>
         <tbody>
