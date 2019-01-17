@@ -1,12 +1,14 @@
 import os
 
-from flask import Flask, redirect, render_template, session, request, flash, url_for
+from flask import Flask, redirect, render_template, session, request, flash, url_for, abort
 from flask_session import Session
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
 import json
 from datetime import datetime
+import decimal
+import simplejson as json
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -48,19 +50,19 @@ def books():
 
 @app.route("/book/<string:isbn>", methods=["GET","POST"])
 def book(isbn):
-    """Get user input"""
+    #Get user input
     review = request.form.get("textreview")
     rating = request.form.get("textrating")
 
-    """Return book data from the database"""
+    #Return book data from the database
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn",{"isbn": isbn}).fetchall()
     book_id = [column[0] for column in book]
 
-    """Return review data from the database"""
+    #Return review data from the database
     reviews = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",{"book_id": book_id[0]}).fetchall()
     payload = {'key': 'rQPXZ9RxUsOU0BkirgCzg', 'isbns': isbn}
 
-    """Get Request on GoodReads API"""
+    #Get Request on GoodReads API
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params=payload)
     json_data = res.json()
     reviews_count = json_data['books'][0]['work_ratings_count']
@@ -126,7 +128,18 @@ def register():
 
 @app.route("/api/<string:isbn>", methods=["GET"])
 def api(isbn):
-    response = db.execute("SELECT books.title,  books.author,  books.year,  round(avg(reviews.rating),1) average_rating,  count(*) review_count  FROM books join reviews ON books.id = reviews.book_id WHERE books.isbn =  :isbn group by books.isbn    ,  books.title    ,  books.author    ,  books.year",{"isbn": isbn}).fetchall()
-    
-    return response
+    response = db.execute("SELECT books.title,  books.author,  books.year, books.isbn,  round(avg(reviews.rating),1) average_rating,  count(*) review_count  FROM books join reviews ON books.id = reviews.book_id WHERE books.isbn =  :isbn group by books.isbn    ,  books.title    ,  books.author    ,  books.year",{"isbn": isbn}).fetchall()
+    if len(response) != 0 :
+        json_string = {
+            "title": response[0][0],
+            "author": response[0][1],
+            "year": response[0][2],
+            "isbn": response[0][3],
+            "review_count": response[0][4],
+            "average_score": response[0][5]
+        }
+        json_string = json.dumps(json_string, indent=4)
+    else:
+        abort(404)
+    return json_string
 
